@@ -1,16 +1,32 @@
+import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchAll } from "../../actions";
+import { fetchAll, fetchSome } from "../../actions";
 
 class CharacterList extends React.Component {
-  componentDidMount() {
-    this.props.fetchAll("character");
+  componentDidUpdate() {
+    if (this.props.currentUser && this.props.currentUser.id) {
+      if (this.props.characters.length > 0) {
+        return;
+      }
+      if (this.props.userCharacters.length > 0) {
+        const characterIds = Object.keys(
+          _.mapKeys(this.props.userCharacters, "character_id")
+        );
+        const query = characterIds.map(id => `character_id=${id}`);
+        this.props.fetchSome("characters", query);
+        return;
+      }
+      this.props.fetchSome(
+        "user_characters",
+        `user_id=${this.props.currentUser.id}`
+      );
+    }
   }
 
   renderAdmin = character => {
-    // if (character.user.id === this.props.currentUser.id) {
-    if (true) {
+    if (this.props.currentUser && this.props.currentUser.id) {
       return (
         <div className="right floated content">
           <Link
@@ -48,11 +64,11 @@ class CharacterList extends React.Component {
   };
 
   renderCreate = () => {
-    if (this.props.isSignedIn) {
+    if (this.props.currentUser && this.props.currentUser.id) {
       return (
         <div style={{ textAlign: "right" }}>
-          <Link to="/characters/new" className="ui button primary">
-            Add Character
+          <Link to="/characters/new" className="ui button positive">
+            <i className="plus icon" /> Add Character
           </Link>
         </div>
       );
@@ -73,11 +89,12 @@ class CharacterList extends React.Component {
 const mapStateToProps = state => {
   return {
     characters: Object.values(state.characters),
-    currentUser: state.currentUser
+    userCharacters: Object.values(state.userCharacters),
+    currentUser: state.auth.currentUser
   };
 };
 
 export default connect(
   mapStateToProps,
-  { fetchAll }
+  { fetchAll, fetchSome }
 )(CharacterList);

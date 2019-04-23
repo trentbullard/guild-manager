@@ -22,12 +22,10 @@ class OauthReceiver extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log("props: ", props);
     this.codeErrors = null;
   }
 
   getQueryParams() {
-    console.log("this.props: ", this.props);
     return queryString.parse(this.props.location.search);
   }
 
@@ -69,10 +67,7 @@ class OauthReceiver extends React.Component {
     }
 
     if (this.props.discordProfileData && this.props.discordProfileData.id) {
-      if (
-        this.props.discordUserMatch &&
-        this.props.discordUserMatch.length > 0
-      ) {
+      if (this.props.searched && !this.props.discordUserMatch) {
         this.createNewUserFromDiscordData(
           this.props.discordProfileData,
           this.props.tokenResponse
@@ -144,7 +139,8 @@ const mapStateToProps = (state, ownProps) => {
     currentUser: state.auth.currentUser,
     tokenResponse: state.auth.tokenResponse,
     discordProfileData: state.auth.discordProfileData,
-    discordUserMatch: state.auth.discordUserMatch
+    discordUserMatch: state.auth.discordUserMatch,
+    searched: state.auth.searched
   };
 };
 

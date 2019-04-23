@@ -9,8 +9,7 @@ class GuildList extends React.Component {
   }
 
   renderAdmin = guild => {
-    // if (guild.user.id === this.props.currentUser.id) {
-    if (true) {
+    if (this.props.currentUser && this.props.currentUser.id) {
       return (
         <div className="right floated content">
           <Link to={`/guilds/edit/${guild.id}`} className="button ui primary">
@@ -45,11 +44,11 @@ class GuildList extends React.Component {
   };
 
   renderCreate = () => {
-    if (this.props.isSignedIn) {
+    if (this.props.currentUser && this.props.currentUser.id) {
       return (
         <div style={{ textAlign: "right" }}>
-          <Link to="/guilds/new" className="ui button primary">
-            Add Guild
+          <Link to="/guilds/new" className="ui button positive">
+            <i className="plus icon" /> Add Guild
           </Link>
         </div>
       );
@@ -70,8 +69,7 @@ class GuildList extends React.Component {
 const mapStateToProps = state => {
   return {
     guilds: Object.values(state.guilds),
-    currentUser: state.currentUser,
-    session: state.session
+    currentUser: state.auth.currentUser
   };
 };
 

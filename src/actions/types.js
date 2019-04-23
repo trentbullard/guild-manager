@@ -2,6 +2,10 @@ export const fetch = oType => {
   return `FETCH_${oType.toUpperCase()}`;
 };
 
+export const fetchSome = oType => {
+  return `FETCH_SOME_${oType.toUpperCase()}`;
+};
+
 export const edit = oType => {
   return `EDIT_${oType.toUpperCase()}`;
 };

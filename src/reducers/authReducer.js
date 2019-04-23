@@ -4,7 +4,8 @@ const INITIAL_STATE = {
   currentUser: {},
   tokenResponse: null,
   discordProfileData: null,
-  discordUserMatch: null
+  discordUserMatch: null,
+  searched: false
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -14,7 +15,7 @@ export default (state = INITIAL_STATE, action) => {
     case types.HANDLE_ACCESS_TOKEN:
       return { ...state, discordProfileData: action.payload };
     case types.HANDLE_DISCORD_DATA:
-      return { ...state, discordUserMatch: action.payload[0] };
+      return { ...state, searched: true, discordUserMatch: action.payload[0] };
     case types.FETCH_AUTH_USER:
       return { ...state, currentUser: action.payload };
     case types.SIGN_OUT:

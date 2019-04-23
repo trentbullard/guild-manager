@@ -9,8 +9,7 @@ class EventList extends React.Component {
   }
 
   renderAdmin = event => {
-    // TODO: implement session handling
-    if (true) {
+    if (this.props.currentUser && this.props.currentUser.id) {
       return (
         <div className="right floated content">
           <Link to={`/events/edit/${event.id}`} className="button ui primary">
@@ -45,11 +44,11 @@ class EventList extends React.Component {
   };
 
   renderCreate = () => {
-    if (this.props.isSignedIn) {
+    if (this.props.currentUser && this.props.currentUser.id) {
       return (
         <div style={{ textAlign: "right" }}>
-          <Link to="/events/new" className="ui button primary">
-            Add Event
+          <Link to="/events/new" className="ui button positive">
+            <i className="plus icon" /> Add Event
           </Link>
         </div>
       );
@@ -70,8 +69,7 @@ class EventList extends React.Component {
 const mapStateToProps = state => {
   return {
     events: Object.values(state.events),
-    currentUser: state.currentUser,
-    session: state.session
+    currentUser: state.auth.currentUser
   };
 };
 

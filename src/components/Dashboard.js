@@ -15,7 +15,6 @@ class Dashboard extends React.Component {
   };
 
   render() {
-    console.log("dashboard session prop: ", this.props);
     return (
       <div>
         {this.renderPageTitle()}

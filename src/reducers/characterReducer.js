@@ -9,6 +9,7 @@ export default (state = {}, action) => {
       return { ...state, [action.payload.id]: action.payload };
     case types.destroy("character"):
       return _.omit(state, action.payload);
+    case types.fetchSome("characters"):
     case types.fetch("characters"):
       return { ...state, ..._.mapKeys(action.payload, "id") };
     default:

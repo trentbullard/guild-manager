@@ -8,6 +8,11 @@ export const fetchOne = (oType, id) => async dispatch => {
   dispatch({ type: types.fetch(oType), payload: response.data });
 };
 
+export const fetchSome = (oType, terms) => async dispatch => {
+  const response = await data.get(`/${oType}?${terms}`);
+  dispatch({ type: types.fetchSome(`${oType}`), payload: response.data });
+};
+
 export const fetchAll = oType => async dispatch => {
   const response = await data.get(`/${oType}s`);
   dispatch({ type: types.fetch(`${oType}s`), payload: response.data });
@@ -30,6 +35,10 @@ export const destroy = (oType, id) => async dispatch => {
   dispatch({ type: types.destroy(oType), payload: response.data });
   history.push("/");
 };
+
+////////////////////////////
+// Discord OAuth2 Actions //
+////////////////////////////
 
 export const handleDiscordData = discordId => async dispatch => {
   const response = await data.get(`/users?discord_id=${discordId}`);
