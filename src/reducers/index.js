@@ -6,13 +6,15 @@ import characterReducer from "./characterReducer";
 import userCharacterReducer from "./userCharacterReducer";
 import guildReducer from "./guildReducer";
 import eventReducer from "./eventReducer";
+import userGuildReducer from "./userGuildReducer";
 
 export default combineReducers({
   auth: authReducer,
   users: userReducer,
   characters: characterReducer,
   userCharacters: userCharacterReducer,
-  form: formReducer,
   guilds: guildReducer,
-  events: eventReducer
+  userGuilds: userGuildReducer,
+  events: eventReducer,
+  form: formReducer
 });

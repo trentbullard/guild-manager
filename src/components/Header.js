@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <div className="ui secondary pointing menu">
       <Link to={`/`} className="item">
-        Convergence
+        Raid Dashboard
       </Link>
       <div className="right menu">
         <DiscordAuth />

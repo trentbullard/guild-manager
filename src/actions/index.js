@@ -1,6 +1,6 @@
 import data from "../apis/data";
-import history from "../history";
 import discordAuth from "../apis/discord";
+import eq2Data from "../apis/eq2";
 import * as types from "./types";
 
 export const fetchOne = (oType, id) => async dispatch => {
@@ -21,19 +21,16 @@ export const fetchAll = oType => async dispatch => {
 export const create = (oType, formValues) => async dispatch => {
   const response = await data.post(`/${oType}s`, formValues);
   dispatch({ type: types.create(oType), payload: response.data });
-  history.push("/");
 };
 
 export const edit = (oType, id, formValues) => async dispatch => {
   const response = await data.patch(`/${oType}s/${id}`, formValues);
   dispatch({ type: types.edit(oType), payload: response.data });
-  history.push("/");
 };
 
 export const destroy = (oType, id) => async dispatch => {
   const response = await data.delete(`/${oType}s/${id}`);
   dispatch({ type: types.destroy(oType), payload: response.data });
-  history.push("/");
 };
 
 ////////////////////////////
@@ -95,4 +92,15 @@ export const signOut = userId => {
   return {
     type: types.SIGN_OUT
   };
+};
+
+//////////////////////
+// EQ2 Data Actions //
+//////////////////////
+
+export const fetchEQ2CharacterData = (oType, name, world) => async dispatch => {
+  const response = await eq2Data.get(
+    `/${oType}/?c:show=equipmentslot_list,spell_list,equipped_mount,mount_list,collections,stats,dbid,resists,type,tradeskills,statistics,locationdata,name,guild,house_list,skills,experience,faction_list,language_list&name.first_lower=${name.toLowerCase()}&locationdata.world=${world}&c:resolve=factions,equipmentslots`
+  );
+  dispatch({ type: types.FETCH_EQ2_CHARACTER_DATA, payload: response.data });
 };

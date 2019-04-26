@@ -2,9 +2,18 @@ import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchAll, fetchSome } from "../../actions";
+import { fetchSome } from "../../actions";
+
+var util = require("util");
 
 class CharacterList extends React.Component {
+  componentDidMount() {
+    this.props.fetchSome(
+      "user_characters",
+      `user_id=${this.props.currentUser.id}`
+    );
+  }
+
   componentDidUpdate() {
     if (this.props.currentUser && this.props.currentUser.id) {
       if (this.props.characters.length > 0) {
@@ -14,14 +23,15 @@ class CharacterList extends React.Component {
         const characterIds = Object.keys(
           _.mapKeys(this.props.userCharacters, "character_id")
         );
-        const query = characterIds.map(id => `character_id=${id}`);
+        const query = characterIds.map(id => `id=${id}`).join("&");
         this.props.fetchSome("characters", query);
         return;
+      } else {
+        this.props.fetchSome(
+          "user_characters",
+          `user_id=${this.props.currentUser.id}`
+        );
       }
-      this.props.fetchSome(
-        "user_characters",
-        `user_id=${this.props.currentUser.id}`
-      );
     }
   }
 
@@ -54,7 +64,7 @@ class CharacterList extends React.Component {
           <i className="large middle aligned icon address card outline" />
           <div className="content">
             <Link to={`/characters/${character.id}`} className="header">
-              {character.name}
+              {character.name.first || character.name}
             </Link>
             <div className="description">{character.description}</div>
           </div>
@@ -66,21 +76,29 @@ class CharacterList extends React.Component {
   renderCreate = () => {
     if (this.props.currentUser && this.props.currentUser.id) {
       return (
-        <div style={{ textAlign: "right" }}>
-          <Link to="/characters/new" className="ui button positive">
-            <i className="plus icon" /> Add Character
-          </Link>
-        </div>
+        <Link to="/events/new" className="ui green label">
+          <i className="plus icon" /> New
+        </Link>
       );
+    }
+  };
+
+  renderListHeader = () => {
+    if (this.props.currentUser && this.props.currentUser.id) {
+      return "Characters";
+    } else {
+      return "Characters";
     }
   };
 
   render() {
     return (
       <div>
-        <h2>Characters</h2>
+        <h3 className="ui header">
+          {this.renderListHeader()}
+          {/* {this.renderCreate()} */}
+        </h3>
         <div className="ui celled list">{this.renderList()}</div>
-        {this.renderCreate()}
       </div>
     );
   }
@@ -96,5 +114,5 @@ const mapStateToProps = state => {
 
 export default connect(
   mapStateToProps,
-  { fetchAll, fetchSome }
+  { fetchSome }
 )(CharacterList);

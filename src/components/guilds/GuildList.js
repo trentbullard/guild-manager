@@ -1,26 +1,40 @@
+import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchAll } from "../../actions";
+import { fetchAll, fetchSome } from "../../actions";
 
 class GuildList extends React.Component {
-  componentDidMount() {
-    this.props.fetchAll("guild");
+  componentDidUpdate() {
+    if (this.props.currentUser && this.props.currentUser.id) {
+      if (this.props.guilds.length > 0) {
+        return;
+      }
+      if (this.props.userGuilds.length > 0) {
+        const guildIds = Object.keys(
+          _.mapKeys(this.props.userGuilds, "guild_id")
+        );
+        const query = guildIds.map(id => `id=${id}`).join("&");
+        this.props.fetchSome("guilds", query);
+        return;
+      } else {
+        this.props.fetchSome(
+          "user_guilds",
+          `user_id=${this.props.currentUser.id}`
+        );
+      }
+    }
   }
+
+  onClickLeave = () => {};
 
   renderAdmin = guild => {
     if (this.props.currentUser && this.props.currentUser.id) {
       return (
         <div className="right floated content">
-          <Link to={`/guilds/edit/${guild.id}`} className="button ui primary">
-            Edit
-          </Link>
-          <Link
-            to={`/guilds/delete/${guild.id}`}
-            className="button ui negative"
-          >
-            Delete
-          </Link>
+          <button onClick={this.onClickLeave} className="button ui negative">
+            Leave
+          </button>
         </div>
       );
     }
@@ -46,21 +60,29 @@ class GuildList extends React.Component {
   renderCreate = () => {
     if (this.props.currentUser && this.props.currentUser.id) {
       return (
-        <div style={{ textAlign: "right" }}>
-          <Link to="/guilds/new" className="ui button positive">
-            <i className="plus icon" /> Add Guild
-          </Link>
-        </div>
+        <Link to="/events/new" className="ui green label">
+          <i className="plus icon" /> New
+        </Link>
       );
+    }
+  };
+
+  renderListHeader = () => {
+    if (this.props.currentUser && this.props.currentUser.id) {
+      return "Guilds";
+    } else {
+      return "Guilds";
     }
   };
 
   render() {
     return (
       <div>
-        <h2>Guilds</h2>
+        <h3 className="ui header">
+          {this.renderListHeader()}
+          {/* {this.renderCreate()} */}
+        </h3>
         <div className="ui celled list">{this.renderList()}</div>
-        {this.renderCreate()}
       </div>
     );
   }
@@ -68,12 +90,13 @@ class GuildList extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    guilds: Object.values(state.guilds),
+    guilds: Object.values(state.guilds.items),
+    userGuilds: Object.values(state.userGuilds),
     currentUser: state.auth.currentUser
   };
 };
 
 export default connect(
   mapStateToProps,
-  { fetchAll }
+  { fetchAll, fetchSome }
 )(GuildList);

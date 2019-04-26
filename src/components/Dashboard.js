@@ -10,7 +10,7 @@ import { fetchOne } from "../actions";
 class Dashboard extends React.Component {
   renderPageTitle = () => {
     if (this.props.currentUser && this.props.currentUser.id) {
-      return <h1>Welcome, {this.props.currentUser.discord_username}</h1>;
+      return <h1>{this.props.currentUser.discord_username}'s Dashboard</h1>;
     }
   };
 
@@ -18,11 +18,13 @@ class Dashboard extends React.Component {
     return (
       <div>
         {this.renderPageTitle()}
+        <div className="ui hidden divider" />
+        <EventList />
+        <div className="ui hidden divider" />
         <GuildList />
         <div className="ui hidden divider" />
         <CharacterList />
         <div className="ui hidden divider" />
-        <EventList />
       </div>
     );
   }

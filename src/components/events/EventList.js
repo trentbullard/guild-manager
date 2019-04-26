@@ -12,14 +12,11 @@ class EventList extends React.Component {
     if (this.props.currentUser && this.props.currentUser.id) {
       return (
         <div className="right floated content">
-          <Link to={`/events/edit/${event.id}`} className="button ui primary">
-            Edit
-          </Link>
           <Link
             to={`/events/delete/${event.id}`}
             className="button ui negative"
           >
-            Delete
+            Abandon
           </Link>
         </div>
       );
@@ -31,7 +28,7 @@ class EventList extends React.Component {
       return (
         <div className="item" key={event.id}>
           {this.renderAdmin(event)}
-          <i className="large middle aligned icon address card outline" />
+          <i className="large middle aligned icon calendar outline" />
           <div className="content">
             <Link to={`/events/${event.id}`} className="header">
               {event.name}
@@ -46,21 +43,29 @@ class EventList extends React.Component {
   renderCreate = () => {
     if (this.props.currentUser && this.props.currentUser.id) {
       return (
-        <div style={{ textAlign: "right" }}>
-          <Link to="/events/new" className="ui button positive">
-            <i className="plus icon" /> Add Event
-          </Link>
-        </div>
+        <Link to="/events/new" className="ui green label">
+          <i className="plus icon" /> New
+        </Link>
       );
+    }
+  };
+
+  renderListHeader = () => {
+    if (this.props.currentUser && this.props.currentUser.id) {
+      return "Upcoming Events";
+    } else {
+      return "Upcoming Events";
     }
   };
 
   render() {
     return (
       <div>
-        <h2>Events</h2>
+        <h3 className="ui header">
+          {this.renderListHeader()}
+          {/* {this.renderCreate()} */}
+        </h3>
         <div className="ui celled list">{this.renderList()}</div>
-        {this.renderCreate()}
       </div>
     );
   }
