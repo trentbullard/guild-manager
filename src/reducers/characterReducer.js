@@ -14,6 +14,8 @@ export default (state = {}, action) => {
       return { ...state, ..._.mapKeys(action.payload, "id") };
     case types.FETCH_EQ2_CHARACTER_DATA:
       return { ...state, characterData: action.payload.character_list };
+    case types.FETCH_EQ2_CHARACTER_LIST:
+      return { ...state, ..._.mapKeys(action.payload, "dbid") };
     default:
       return state;
   }

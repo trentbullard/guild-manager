@@ -3,6 +3,7 @@ import * as types from "../actions/types";
 
 const INITIAL_STATE = {
   items: {},
+  guildData: null,
   searched: false
 };
 
@@ -25,6 +26,8 @@ export default (state = INITIAL_STATE, action) => {
         items: { ..._.mapKeys(action.payload, "name") },
         searched: true
       };
+    case types.FETCH_EQ2_GUILD_DATA:
+      return { ...state, guildData: action.payload.guild_list[0] };
     default:
       return state;
   }

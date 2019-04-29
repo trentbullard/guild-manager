@@ -47,7 +47,6 @@ class CharacterShow extends React.Component {
           });
         } else {
           this.props.fetchEQ2CharacterData(
-            "character",
             this.props.character.name.first || this.props.character.name,
             "Kaladim"
           );
@@ -62,7 +61,7 @@ class CharacterShow extends React.Component {
               this.doCreateGuild = false;
               this.createGuildFromData(this.props.character.guild);
             } else if (Object.keys(this.props.guilds.items).length > 1) {
-              _.each(this.props.guilds.items, (name, guild) => {
+              _.each(this.props.guilds.items, guild => {
                 if (guild.guildid == this.props.character.guild.guildid) {
                   this.props.fetchOne("guild", guild.id);
                   return false;
@@ -99,7 +98,6 @@ class CharacterShow extends React.Component {
     ) {
       this.refreshing = true;
       this.props.fetchEQ2CharacterData(
-        "character",
         this.props.character.name.first || this.props.character.name,
         "Kaladim"
       );
@@ -188,7 +186,6 @@ const mapStateToProps = (state, ownProps) => {
   return {
     character: state.characters[ownProps.match.params.id],
     characterData: state.characters.characterData,
-    guildCharacters: state.guildCharacters,
     guilds: state.guilds
   };
 };

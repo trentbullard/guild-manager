@@ -63,18 +63,20 @@ class CharacterList extends React.Component {
 
   renderList = () => {
     return this.props.characters.map(character => {
-      return (
-        <div className="item" key={character.id}>
-          {this.renderAdmin(character)}
-          <i className="large middle aligned icon address card outline" />
-          <div className="content">
-            <Link to={`/characters/${character.id}`} className="header">
-              {character.name.first || character.name}
-            </Link>
-            <div className="description">{character.description}</div>
+      if (character.name) {
+        return (
+          <div className="item" key={character.id}>
+            {this.renderAdmin(character)}
+            <i className="large middle aligned icon address card outline" />
+            <div className="content">
+              <Link to={`/characters/${character.id}`} className="header">
+                {character.name.first || character.name}
+              </Link>
+              <div className="description">{character.description}</div>
+            </div>
           </div>
-        </div>
-      );
+        );
+      }
     });
   };
 

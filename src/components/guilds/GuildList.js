@@ -47,6 +47,9 @@ class GuildList extends React.Component {
 
   renderList = () => {
     return this.props.guilds.map(guild => {
+      const tags = guild.personalitytag_list || [];
+      const iTag = Math.floor(Math.random() * Math.floor(tags.length));
+      const description = guild.personalitytag_list[iTag].text;
       return (
         <div className="item" key={guild.id}>
           {this.renderAdmin(guild)}
@@ -55,7 +58,7 @@ class GuildList extends React.Component {
             <Link to={`/guilds/${guild.id}`} className="header">
               {guild.name}
             </Link>
-            <div className="description">{guild.description}</div>
+            <div className="description">{description}</div>
           </div>
         </div>
       );

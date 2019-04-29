@@ -98,9 +98,16 @@ export const signOut = userId => {
 // EQ2 Data Actions //
 //////////////////////
 
-export const fetchEQ2CharacterData = (oType, name, world) => async dispatch => {
+export const fetchEQ2CharacterData = (name, world) => async dispatch => {
   const response = await eq2Data.get(
-    `/${oType}/?c:show=equipmentslot_list,spell_list,equipped_mount,mount_list,collections,stats,dbid,resists,type,tradeskills,statistics,locationdata,name,guild,house_list,skills,experience,faction_list,language_list&name.first_lower=${name.toLowerCase()}&locationdata.world=${world}&c:resolve=factions,equipmentslots`
+    `/character/?c:show=equipmentslot_list,spell_list,equipped_mount,mount_list,collections,stats,dbid,resists,type,tradeskills,statistics,locationdata,name,guild,house_list,skills,experience,faction_list,language_list&name.first_lower=${name.toLowerCase()}&locationdata.world=${world}&c:resolve=factions,equipmentslots`
   );
   dispatch({ type: types.FETCH_EQ2_CHARACTER_DATA, payload: response.data });
+};
+
+export const fetchEQ2GuildData = (name, world) => async dispatch => {
+  const response = await eq2Data.get(
+    `/guild/?name=${name}&world=${world}&c:resolve=members(dbid,name.first,type.level,stats.sta.effective,stats.power.max,stats.health.max,stats.wis.effective,stats.int.effective,stats.str.effective,stats.agi.effective,stats.defense,stats.combat,type.class)`
+  );
+  dispatch({ type: types.FETCH_EQ2_GUILD_DATA, payload: response.data });
 };
