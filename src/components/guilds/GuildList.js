@@ -5,19 +5,24 @@ import { Link } from "react-router-dom";
 import { fetchAll, fetchSome } from "../../actions";
 
 class GuildList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.doSearchForUserGuilds = true;
+    this.doSearchForGuilds = true;
+  }
+
   componentDidUpdate() {
     if (this.props.currentUser && this.props.currentUser.id) {
-      if (this.props.guilds.length > 0) {
-        return;
-      }
-      if (this.props.userGuilds.length > 0) {
+      if (this.props.userGuilds.length > 0 && this.doSearchForGuilds) {
+        this.doSearchForGuilds = false;
         const guildIds = Object.keys(
           _.mapKeys(this.props.userGuilds, "guild_id")
         );
         const query = guildIds.map(id => `id=${id}`).join("&");
         this.props.fetchSome("guilds", query);
         return;
-      } else {
+      } else if (this.doSearchForUserGuilds) {
+        this.doSearchForUserGuilds = false;
         this.props.fetchSome(
           "user_guilds",
           `user_id=${this.props.currentUser.id}`

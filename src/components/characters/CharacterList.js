@@ -7,6 +7,12 @@ import { fetchSome } from "../../actions";
 var util = require("util");
 
 class CharacterList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.doSearchForUserCharacters = true;
+    this.doSearchForCharacters = true;
+  }
+
   componentDidMount() {
     this.props.fetchSome(
       "user_characters",
@@ -16,17 +22,16 @@ class CharacterList extends React.Component {
 
   componentDidUpdate() {
     if (this.props.currentUser && this.props.currentUser.id) {
-      if (this.props.characters.length > 0) {
-        return;
-      }
-      if (this.props.userCharacters.length > 0) {
+      if (this.props.userCharacters.length > 0 && this.doSearchForCharacters) {
+        this.doSearchForCharacters = false;
         const characterIds = Object.keys(
           _.mapKeys(this.props.userCharacters, "character_id")
         );
         const query = characterIds.map(id => `id=${id}`).join("&");
         this.props.fetchSome("characters", query);
         return;
-      } else {
+      } else if (this.doSearchForUserCharacters) {
+        this.doSearchForUserCharacters = false;
         this.props.fetchSome(
           "user_characters",
           `user_id=${this.props.currentUser.id}`

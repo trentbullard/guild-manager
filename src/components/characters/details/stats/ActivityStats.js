@@ -48,7 +48,7 @@ const ActivityStats = ({ stats }) => {
                 <tr>
                   <td>kdr</td>
                   <td data-label="kills_deaths_ratio">
-                    {stats.kills_deaths_ratio.value}
+                    {stats.kills_deaths_ratio.value.toFixed(1)}
                   </td>
                 </tr>
               </tbody>

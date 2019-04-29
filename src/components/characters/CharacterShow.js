@@ -11,13 +11,11 @@ import {
   fetchEQ2CharacterData,
   edit
 } from "../../actions";
-import VitalStats from "./details/stats/VitalStats";
-import ResistStats from "./details/stats/ResistStats";
-import ActivityStats from "./details/stats/ActivityStats";
-import LanguageStats from "./details/stats/LanguageStats";
-import LocationStats from "./details/stats/LocationStats";
-import ExperienceStats from "./details/stats/ExperienceStats";
-import FactionStats from "./details/stats/FactionStats";
+
+import StatsTab from "./StatsTab";
+import ItemsTab from "./ItemsTab";
+import SkillsTab from "./SkillsTab";
+import AAsTab from "./AAsTab";
 
 // var util = require("util");
 class CharacterShow extends React.Component {
@@ -25,6 +23,9 @@ class CharacterShow extends React.Component {
     super(props);
     this.doCreateGuild = true;
     this.doSearchForGuild = true;
+    this.refreshTimer = new Date(
+      new Date().setMinutes(new Date().getMinutes() - 15)
+    ).toISOString();
     this.refreshing = false;
   }
 
@@ -34,13 +35,10 @@ class CharacterShow extends React.Component {
 
   componentDidUpdate() {
     this.refreshing = false;
-    const yesterday = new Date(
-      new Date().setMinutes(new Date().getMinutes() - 15)
-    ).toISOString();
     if (this.props.character) {
       if (
         !this.props.character.updated_at ||
-        this.props.character.updated_at < yesterday
+        this.props.character.updated_at < this.refreshTimer
       ) {
         if (this.props.characterData) {
           this.props.edit("character", this.props.character.id, {
@@ -95,48 +93,15 @@ class CharacterShow extends React.Component {
   };
 
   refreshCharacterData = () => {
-    if (!this.refreshing) {
+    if (
+      !this.refreshing ||
+      this.props.character.updated_at < this.refreshTimer
+    ) {
       this.refreshing = true;
       this.props.fetchEQ2CharacterData(
         "character",
         this.props.character.name.first || this.props.character.name,
         "Kaladim"
-      );
-    }
-  };
-
-  renderStatsTab = () => {
-    if (this.props.character && this.props.character.dbid) {
-      return (
-        <div>
-          <h3 className="ui header">
-            {`Level ${this.props.character.type.level} ${
-              this.props.character.type.race
-            } ${this.props.character.type.class} on ${
-              this.props.character.locationdata.world
-            }`}
-            <div className="ui sub header">
-              {`updated: ${new Date(
-                this.props.character.updated_at
-              ).toLocaleString()} `}
-              <a onClick={this.refreshCharacterData} data-inverted="" data-tooltip="usable every 15 minutes" data-position="right center">
-                <i className="sync alternate icon" />
-              </a>
-            </div>
-          </h3>
-          <div className="ui hidden divider" />
-          <div className="ui sixteen column grid">
-            <VitalStats stats={this.props.character.stats} />
-            <ResistStats resists={this.props.character.resists} />
-            <div className="ui sixteen wide centered column divider" />
-            <LanguageStats languages={this.props.character.language_list} />
-            <ActivityStats stats={this.props.character.statistics} />
-            <LocationStats locationdata={this.props.character.locationdata} />
-            <ExperienceStats stats={this.props.character.experience} />
-            <FactionStats factions={this.props.character.faction_list} />
-            <div className="ui hidden divider" />
-          </div>
-        </div>
       );
     }
   };
@@ -186,17 +151,31 @@ class CharacterShow extends React.Component {
             <TabList className="ui pointing secondary menu">
               <Tab className="item">Stats</Tab>
               <Tab className="item">Items</Tab>
-              <Tab className="item">Skills</Tab>
+              <Tab className="item" disabled>
+                Skills
+              </Tab>
               <Tab className="item" disabled>
                 AAs
               </Tab>
             </TabList>
             <TabPanel className="ui tab segment">
-              {this.renderStatsTab()}
+              <StatsTab
+                character={this.props.character}
+                refresh={this.refreshCharacterData}
+              />
             </TabPanel>
-            <TabPanel className="ui tab segment">Items</TabPanel>
-            <TabPanel className="ui tab segment">Skills</TabPanel>
-            <TabPanel className="ui tab segment">AAs</TabPanel>
+            <TabPanel className="ui tab segment">
+              <ItemsTab
+                character={this.props.character}
+                refresh={this.refreshCharacterData}
+              />
+            </TabPanel>
+            <TabPanel className="ui tab segment">
+              <SkillsTab character={this.props.character} />
+            </TabPanel>
+            <TabPanel className="ui tab segment">
+              <AAsTab character={this.props.character} />
+            </TabPanel>
           </Tabs>
         </div>
       );

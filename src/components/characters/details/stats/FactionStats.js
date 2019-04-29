@@ -3,6 +3,9 @@ import React from "react";
 
 const renderFactionList = factions => {
   return factions.map(f => {
+    if (!f) {
+      return;
+    }
     return (
       <tr key={f.id}>
         <td data-label="faction-name">{f.name}</td>
@@ -14,6 +17,9 @@ const renderFactionList = factions => {
 
 const FactionStats = ({ factions }) => {
   const filteredFactions = factions.map(f => {
+    if (!f.name) {
+      return;
+    }
     var shortName = f.name.split("The ")[1] || f.name;
     shortName = shortName.split("City of ")[1] || shortName;
     return { name: shortName, value: f.value, id: f.id };
