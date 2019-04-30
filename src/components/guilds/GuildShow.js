@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import { fetchOne, fetchEQ2GuildData, edit } from "../../actions";
 import MemberTable from "./MemberTable";
+import DetailsTab from "./DetailsTab";
 
 // var util = require("util");
 
@@ -77,7 +78,9 @@ class GuildShow extends React.Component {
         <TabPanel className="ui tab segment">
           <MemberTable members={this.props.guild.member_list} />
         </TabPanel>
-        <TabPanel className="ui tab segment" />
+        <TabPanel className="ui tab segment">
+          <DetailsTab guild={this.props.guild} />
+        </TabPanel>
       </Tabs>
     );
   };
