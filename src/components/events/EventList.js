@@ -1,13 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchAll } from "../../actions";
 
 class EventList extends React.Component {
-  componentDidMount() {
-    this.props.fetchAll("event");
-  }
-
   renderAdmin = event => {
     if (this.props.currentUser && this.props.currentUser.id) {
       return (
@@ -65,7 +60,7 @@ class EventList extends React.Component {
           {this.renderListHeader()}
           {/* {this.renderCreate()} */}
         </h3>
-        <div className="ui celled list">{this.renderList()}</div>
+        {/* <div className="ui celled list">{this.renderList()}</div> */}
       </div>
     );
   }
@@ -73,12 +68,11 @@ class EventList extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    events: Object.values(state.events),
-    currentUser: state.auth.currentUser
+    currentUser: state.currentUser
   };
 };
 
 export default connect(
   mapStateToProps,
-  { fetchAll }
+  null
 )(EventList);

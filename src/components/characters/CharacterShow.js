@@ -184,7 +184,8 @@ class CharacterShow extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    character: state.characters[ownProps.match.params.id],
+    character: state.characters.items[ownProps.match.params.id],
+    doFetchCharacter: !state.characters.searchShow,
     characterData: state.characters.characterData,
     guilds: state.guilds
   };

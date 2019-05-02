@@ -88,7 +88,7 @@ export const fetchAuthUser = userId => async dispatch => {
   dispatch({ type: types.FETCH_AUTH_USER, payload: response.data });
 };
 
-export const signOut = userId => {
+export const signOut = () => {
   return {
     type: types.SIGN_OUT
   };

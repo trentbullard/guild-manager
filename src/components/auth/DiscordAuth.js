@@ -6,7 +6,7 @@ import { signOut } from "../../actions";
 
 class DiscordAuth extends React.Component {
   renderAuthButton() {
-    if (this.props.currentUser && this.props.currentUser.id) {
+    if (this.props.currentUser) {
       return (
         <Link to="/logout" className="ui negative discord button">
           <i className="discord icon" /> Logout
@@ -50,7 +50,7 @@ const getSessionCookie = props => {
 const mapStateToProps = (state, ownProps) => {
   return {
     session: getSessionCookie(ownProps),
-    currentUser: state.auth.currentUser
+    currentUser: state.currentUser
   };
 };
 

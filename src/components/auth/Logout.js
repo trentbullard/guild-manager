@@ -5,10 +5,6 @@ import { Redirect } from "react-router-dom";
 import { signOut } from "../../actions";
 
 class Logout extends React.Component {
-  componentDidMount() {
-    this.props.signOut();
-  }
-
   renderRedirect = () => {
     if (this.props.session) {
       const { cookies } = this.props;
@@ -34,7 +30,7 @@ const getSessionCookie = props => {
 const mapStateToProps = (state, ownProps) => {
   return {
     session: getSessionCookie(ownProps),
-    currentUser: state.auth.currentUser
+    currentUser: state.currentUser
   };
 };
 

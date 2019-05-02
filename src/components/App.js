@@ -19,18 +19,8 @@ class App extends React.Component {
     cookies: instanceOf(Cookies).isRequired
   };
 
-  constructor(props) {
-    super(props);
-    if (this.props.currentUser && this.props.currentUser.id) {
-      return;
-    }
-    if (this.props.session && this.props.session.userId) {
-      this.props.fetchAuthUser(this.props.session.userId);
-    }
-  }
-
   componentDidMount() {
-    if (this.props.currentUser && this.props.currentUser.id) {
+    if (this.props.currentUser) {
       return;
     }
     if (this.props.session && this.props.session.userId) {
@@ -67,7 +57,7 @@ const getSessionCookie = props => {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    currentUser: state.auth.currentUser,
+    currentUser: state.currentUser,
     session: getSessionCookie(ownProps)
   };
 };

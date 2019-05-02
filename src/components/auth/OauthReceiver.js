@@ -23,6 +23,7 @@ class OauthReceiver extends React.Component {
   constructor(props) {
     super(props);
     this.codeErrors = null;
+    this.doFetchAuthUser = true;
   }
 
   getQueryParams() {
@@ -48,7 +49,7 @@ class OauthReceiver extends React.Component {
       return;
     }
 
-    if (this.props.currentUser && this.props.currentUser.id) {
+    if (this.props.currentUser) {
       const { cookies } = this.props;
       cookies.set(
         "eq2-data-session",
@@ -61,13 +62,14 @@ class OauthReceiver extends React.Component {
       return;
     }
 
-    if (this.props.discordUserMatch && this.props.discordUserMatch.id) {
+    if (this.props.discordUserMatch && this.doFetchAuthUser) {
+      this.doFetchAuthUser = false;
       this.props.fetchAuthUser(this.props.discordUserMatch.id);
       return;
     }
 
-    if (this.props.discordProfileData && this.props.discordProfileData.id) {
-      if (this.props.searched && !this.props.discordUserMatch) {
+    if (this.props.discordProfileData) {
+      if (this.props.doFetchWithDiscordData && !this.props.discordUserMatch) {
         this.createNewUserFromDiscordData(
           this.props.discordProfileData,
           this.props.tokenResponse
@@ -105,7 +107,7 @@ class OauthReceiver extends React.Component {
   }
 
   renderRedirect = () => {
-    if (this.props.currentUser && this.props.currentUser.id) {
+    if (this.props.currentUser) {
       console.log("already logged in");
       return <Redirect to="/" />;
     }
@@ -136,11 +138,10 @@ const getSessionCookie = props => {
 const mapStateToProps = (state, ownProps) => {
   return {
     session: getSessionCookie(ownProps),
-    currentUser: state.auth.currentUser,
-    tokenResponse: state.auth.tokenResponse,
-    discordProfileData: state.auth.discordProfileData,
-    discordUserMatch: state.auth.discordUserMatch,
-    searched: state.auth.searched
+    currentUser: state.currentUser,
+    tokenResponse: state.tokenResponse,
+    discordProfileData: state.discordProfile,
+    discordUserMatch: state.discordUserMatch
   };
 };
 
