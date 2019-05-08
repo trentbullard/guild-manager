@@ -36,6 +36,12 @@ const renderItemList = slots => {
       );
     }
 
+    const strength = s.item.modifiers.strength
+      ? s.item.modifiers.strength.value
+      : 0;
+    const stamina = s.item.modifiers.stamina
+      ? s.item.modifiers.stamina.value
+      : 0;
     const offensive = s.item.modifiers.offensiveskills
       ? s.item.modifiers.offensiveskills.value
       : 0;
@@ -58,15 +64,12 @@ const renderItemList = slots => {
     const castSpeed = s.item.modifiers.spelltimecastpct
       ? s.item.modifiers.spelltimecastpct.value
       : 0;
+
     return (
       <tr key={s.id}>
         <td data-label={`${s.name}-label`}>{s.name}</td>
-        <td data-label={`${s.name}-primary`}>
-          {s.item.modifiers.strength.value}
-        </td>
-        <td data-label={`${s.name}-stamina`}>
-          {s.item.modifiers.stamina.value}
-        </td>
+        <td data-label={`${s.name}-primary`}>{strength}</td>
+        <td data-label={`${s.name}-stamina`}>{stamina}</td>
         <td data-label={`${s.name}-mit`}>
           {s.item.typeinfo.maxarmorclass || 0}
         </td>
