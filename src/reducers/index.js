@@ -11,7 +11,7 @@ import userCharacterReducer from "./user/character";
 import guildReducer from "./guild/reducer";
 import guildDataReducer from "./guild/data";
 import eventReducer from "./event/reducer";
-import userGuildReducer from "./userGuildReducer";
+import heartbeat from "./heartbeat/reducer";
 
 export default combineReducers({
   tokenResponse: authCodeReducer,
@@ -24,7 +24,7 @@ export default combineReducers({
   userCharacters: userCharacterReducer,
   guilds: guildReducer,
   guildData: guildDataReducer,
-  userGuilds: userGuildReducer,
   events: eventReducer,
-  form: formReducer
+  form: formReducer,
+  heartbeat: heartbeat
 });

@@ -19,6 +19,9 @@ class EventList extends React.Component {
   };
 
   renderList = () => {
+    if (Object.keys(this.props.events).length < 1) {
+      return <div>None Found</div>;
+    }
     return this.props.events.map(event => {
       return (
         <div className="item" key={event.id}>
@@ -60,7 +63,7 @@ class EventList extends React.Component {
           {this.renderListHeader()}
           {/* {this.renderCreate()} */}
         </h3>
-        {/* <div className="ui celled list">{this.renderList()}</div> */}
+        <div className="ui celled list">{this.renderList()}</div>
       </div>
     );
   }
@@ -68,7 +71,8 @@ class EventList extends React.Component {
 
 const mapStateToProps = state => {
   return {
-    currentUser: state.currentUser
+    currentUser: state.currentUser,
+    events: {}
   };
 };
 

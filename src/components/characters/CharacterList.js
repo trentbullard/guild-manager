@@ -25,6 +25,9 @@ const renderAdmin = (currentUser, character) => {
 };
 
 const renderList = (currentUser, characters) => {
+  if (!characters || Object.keys(characters).length < 1) {
+    return <div>None Found</div>;
+  }
   return Object.values(characters).map(character => {
     return (
       <div className="item" key={character.id}>
@@ -44,7 +47,7 @@ const renderList = (currentUser, characters) => {
 const renderCreate = currentUser => {
   if (currentUser) {
     return (
-      <Link to="/events/new" className="ui green label">
+      <Link to="/characters/new" className="ui green label">
         <i className="plus icon" /> New
       </Link>
     );
@@ -64,7 +67,7 @@ const CharacterList = props => {
     <div>
       <h3 className="ui header">
         {renderListHeader(props.currentUser)}
-        {/* {renderCreate()} */}
+        {renderCreate(props.currentUser)}
       </h3>
       <div className="ui celled list">
         {renderList(props.currentUser, props.characters)}

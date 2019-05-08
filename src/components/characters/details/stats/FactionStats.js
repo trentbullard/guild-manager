@@ -1,3 +1,4 @@
+/* eslint-disable array-callback-return */
 import _ from "lodash";
 import React from "react";
 

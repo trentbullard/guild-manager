@@ -1,3 +1,4 @@
+import history from "../history";
 import data from "../apis/data";
 import discordAuth from "../apis/discord";
 import eq2Data from "../apis/eq2";
@@ -18,19 +19,41 @@ export const fetchAll = oType => async dispatch => {
   dispatch({ type: types.fetch(`${oType}s`), payload: response.data });
 };
 
-export const create = (oType, formValues) => async dispatch => {
+export const create = (
+  oType,
+  formValues,
+  doRedirect = false
+) => async dispatch => {
   const response = await data.post(`/${oType}s`, formValues);
   dispatch({ type: types.create(oType), payload: response.data });
+  if (doRedirect) {
+    history.push("/");
+  }
 };
 
-export const edit = (oType, id, formValues) => async dispatch => {
+export const edit = (
+  oType,
+  id,
+  formValues,
+  doRedirect = false
+) => async dispatch => {
   const response = await data.patch(`/${oType}s/${id}`, formValues);
   dispatch({ type: types.edit(oType), payload: response.data });
+  if (doRedirect) {
+    history.push("/");
+  }
 };
 
 export const destroy = (oType, id) => async dispatch => {
   const response = await data.delete(`/${oType}s/${id}`);
   dispatch({ type: types.destroy(oType), payload: response.data });
+};
+
+export const heartbeat = (doRedirect=false) => async dispatch => {
+  dispatch({ type: types.HEARTBEAT });
+  if (doRedirect){
+    history.push("/")
+  }
 };
 
 ////////////////////////////

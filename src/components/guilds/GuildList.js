@@ -1,24 +1,26 @@
+// eslint-disable-next-line no-unused-vars
 import _ from "lodash";
 import React from "react";
-import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { fetchSome } from "../../actions";
 
-const onClickLeave = () => {};
+// const onClickLeave = () => {};
 
-const renderAdmin = (currentUser, guild) => {
-  if (currentUser) {
-    return (
-      <div className="right floated content">
-        <button onClick={onClickLeave} className="button ui negative">
-          Leave
-        </button>
-      </div>
-    );
-  }
-};
+// const renderAdmin = (currentUser, guild) => {
+//   if (currentUser) {
+//     return (
+//       <div className="right floated content">
+//         <button onClick={onClickLeave} className="button ui negative">
+//           Leave
+//         </button>
+//       </div>
+//     );
+//   }
+// };
 
 const renderList = (currentUser, guilds) => {
+  if (!guilds || Object.keys(guilds).length < 1) {
+    return <div>None Found</div>;
+  }
   return Object.values(guilds).map(guild => {
     var description = "";
     if (guild.personalitytag_list) {
@@ -41,15 +43,15 @@ const renderList = (currentUser, guilds) => {
   });
 };
 
-const renderCreate = currentUser => {
-  if (currentUser) {
-    return (
-      <Link to="/events/new" className="ui green label">
-        <i className="plus icon" /> New
-      </Link>
-    );
-  }
-};
+// const renderCreate = currentUser => {
+//   if (currentUser) {
+//     return (
+//       <Link to="/events/new" className="ui green label">
+//         <i className="plus icon" /> New
+//       </Link>
+//     );
+//   }
+// };
 
 const renderListHeader = currentUser => {
   if (currentUser) {

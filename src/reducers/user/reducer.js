@@ -1,7 +1,7 @@
 import _ from "lodash";
 import * as types from "../../actions/types";
 
-export default (state = {}, action) => {
+export default (state = null, action) => {
   switch (action.type) {
     case types.create("user"):
     case types.fetch("user"):

@@ -11,7 +11,8 @@ import actionLogger from "./middleware/actionLogger";
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   reducers,
-  composeEnhancers(applyMiddleware(thunk, actionLogger))
+  composeEnhancers(applyMiddleware(thunk))
+  // composeEnhancers(applyMiddleware(thunk, actionLogger))
 );
 
 ReactDOM.render(

@@ -19,91 +19,6 @@ import AAsTab from "./AAsTab";
 
 // var util = require("util");
 class CharacterShow extends React.Component {
-  constructor(props) {
-    super(props);
-    this.doCreateGuild = true;
-    this.doSearchForGuild = true;
-    this.refreshTimer = new Date(
-      new Date().setMinutes(new Date().getMinutes() - 15)
-    ).toISOString();
-    this.refreshing = false;
-  }
-
-  componentDidMount() {
-    this.props.fetchOne("character", this.props.match.params.id);
-  }
-
-  componentDidUpdate() {
-    this.refreshing = false;
-    if (this.props.character) {
-      if (
-        !this.props.character.updated_at ||
-        this.props.character.updated_at < this.refreshTimer
-      ) {
-        if (this.props.characterData) {
-          this.props.edit("character", this.props.character.id, {
-            ...this.props.characterData[0],
-            updated_at: new Date().toISOString()
-          });
-        } else {
-          this.props.fetchEQ2CharacterData(
-            this.props.character.name.first || this.props.character.name,
-            "Kaladim"
-          );
-        }
-      } else {
-        if (this.props.character.guild) {
-          if (this.props.guilds.searched) {
-            if (
-              Object.keys(this.props.guilds.items).length < 1 &&
-              this.doCreateGuild
-            ) {
-              this.doCreateGuild = false;
-              this.createGuildFromData(this.props.character.guild);
-            } else if (Object.keys(this.props.guilds.items).length > 1) {
-              _.each(this.props.guilds.items, guild => {
-                if (guild.guildid == this.props.character.guild.guildid) {
-                  this.props.fetchOne("guild", guild.id);
-                  return false;
-                }
-              });
-            }
-          } else if (
-            Object.keys(this.props.guilds.items).length < 1 &&
-            this.doSearchForGuild
-          ) {
-            this.doSearchForGuild = false;
-            this.props.fetchSome(
-              "guilds",
-              `name=${this.props.character.guild.name}`
-            );
-          }
-        }
-      }
-    }
-  }
-
-  createGuildFromData = data => {
-    const values = {
-      name: data.name,
-      guildid: data.guildid
-    };
-    this.props.create("guild", values);
-  };
-
-  refreshCharacterData = () => {
-    if (
-      !this.refreshing ||
-      this.props.character.updated_at < this.refreshTimer
-    ) {
-      this.refreshing = true;
-      this.props.fetchEQ2CharacterData(
-        this.props.character.name.first || this.props.character.name,
-        "Kaladim"
-      );
-    }
-  };
-
   renderTitle = () => {
     const characterName =
       this.props.character.name.first || this.props.character.name;
@@ -111,14 +26,12 @@ class CharacterShow extends React.Component {
       ? this.props.character.guild.name
       : null;
     var guildLink = null;
-    if (guildName) {
-      if (this.props.guilds.items[guildName]) {
-        guildLink = (
-          <Link to={`/guilds/${this.props.guilds.items[guildName].id}`}>
-            <div className="blue sub header">{guildName}</div>
-          </Link>
-        );
-      }
+    if (guildName && this.props.guilds[guildName]) {
+      guildLink = (
+        <Link to={`/guilds/${this.props.guilds[guildName].id}`}>
+          <div className="blue sub header">{guildName}</div>
+        </Link>
+      );
     }
     if (this.props.character.guild) {
       return (
@@ -184,10 +97,8 @@ class CharacterShow extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    character: state.characters.items[ownProps.match.params.id],
-    doFetchCharacter: !state.characters.searchShow,
-    characterData: state.characters.characterData,
-    guilds: state.guilds
+    character: state.characters[ownProps.match.params.id],
+    guilds: _.mapKeys(Object.values(state.guilds), "name")
   };
 };
 

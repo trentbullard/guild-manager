@@ -5,10 +5,12 @@ import { Cookies, withCookies } from "react-cookie";
 import Header from "./Header";
 import Dashboard from "./Dashboard";
 import CharacterShow from "./characters/CharacterShow";
+import CharacterCreate from "./characters/CharacterCreate";
 import GuildShow from "./guilds/GuildShow";
 import EventShow from "./events/EventShow";
 import ItemShow from "./items/ItemShow";
 import OauthReceiver from "./auth/OauthReceiver";
+import DataSynthesizer from "./DataSynthesizer";
 import Logout from "./auth/Logout";
 import history from "../history";
 import { connect } from "react-redux";
@@ -33,9 +35,11 @@ class App extends React.Component {
       <div className="ui container">
         <Router history={history}>
           <div>
+            <DataSynthesizer />
             <Header />
             <Switch>
               <Route path="/" exact component={Dashboard} />
+              <Route path="/characters/new" exact component={CharacterCreate} />
               <Route path="/characters/:id" exact component={CharacterShow} />
               <Route path="/guilds/:id" exact component={GuildShow} />
               <Route path="/events/:id" exact component={EventShow} />
