@@ -1,54 +1,14 @@
 /* eslint-disable eqeqeq */
+import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
-import { fetchOne, fetchEQ2GuildData, edit } from "../../actions";
 import MemberTable from "./MemberTable";
 import DetailsTab from "./DetailsTab";
 
 // var util = require("util");
 
 class GuildShow extends React.Component {
-  constructor(props) {
-    super(props);
-    this.doCreateGuild = true;
-    this.doSearchForGuild = true;
-    this.refreshTimer = new Date(
-      new Date().setMinutes(new Date().getMinutes() - 15)
-    ).toISOString();
-    this.refreshingAPIData = false;
-    this.updatingLocalData = false;
-  }
-
-  componentDidMount() {
-    this.props.fetchOne("guild", this.props.match.params.id);
-  }
-
-  componentDidUpdate() {
-    if (this.props.guild) {
-      if (
-        this.props.guild.updated_at ||
-        this.props.guild.updated_at < this.props.refreshTimer
-      ) {
-        if (this.props.guildData) {
-          if (
-            !this.updatingLocalData &&
-            this.props.guildData.guildid == this.props.guild.guildid
-          ) {
-            this.updatingLocalData = true;
-            this.props.edit("guild", this.props.guild.id, {
-              ...this.props.guildData,
-              updated_at: new Date().toISOString()
-            });
-          }
-        } else if (!this.refreshingAPIData) {
-          this.refreshingAPIData = true;
-          this.props.fetchEQ2GuildData(this.props.guild.name, "Kaladim");
-        }
-      }
-    }
-  }
-
   renderTitle = () => {
     return (
       <div className="ui row">
@@ -107,12 +67,13 @@ class GuildShow extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    guild: state.guilds.items[ownProps.match.params.id],
-    guildData: state.guilds.guildData
+    guild: _.mapKeys(Object.values(state.guilds), "id")[
+      ownProps.match.params.id
+    ]
   };
 };
 
 export default connect(
   mapStateToProps,
-  { fetchOne, fetchEQ2GuildData, edit }
+  null
 )(GuildShow);
