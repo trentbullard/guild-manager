@@ -1,5 +1,4 @@
 /* eslint-disable array-callback-return */
-import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
 import {
@@ -13,7 +12,7 @@ import {
 } from "../actions";
 import { includesGuild, includesCharacter } from "../helpers/objects";
 
-var util = require("util");
+// var util = require("util");
 
 class DataSynthesizer extends React.Component {
   constructor(props) {
@@ -43,8 +42,9 @@ class DataSynthesizer extends React.Component {
     if (this.doFetchUserCharacters && this.props.currentUser) {
       this.doFetchUserCharacters = false;
       this.props.fetchSome(
-        "user_characters",
-        `user_id=${this.props.currentUser.id}`
+        "user_character",
+        `user:${this.props.currentUser.id}`,
+        true
       );
     }
   };
@@ -52,15 +52,15 @@ class DataSynthesizer extends React.Component {
   fetchCharacters = () => {
     if (this.charactersToFetch.length > 0) {
       const query = this.charactersToFetch
-        .map(id => {
-          if (!this.charactersFetched.includes(id)) {
-            this.charactersFetched.push(id);
-            return `id=${id}`;
+        .map(name => {
+          if (!this.charactersFetched.includes(name)) {
+            this.charactersFetched.push(name);
+            return `name.first_lower:${name}`;
           }
         })
         .join("&");
       this.charactersToFetch.length = 0;
-      this.props.fetchSome("characters", query);
+      this.props.fetchSome("character", query);
     }
   };
 
@@ -69,20 +69,20 @@ class DataSynthesizer extends React.Component {
       const query = this.guildsToFetch
         .map(g => {
           this.guildsFetched.push(g);
-          return `guildid=${g.guildid}`;
+          return `guildid:${g.guildid}`;
         })
         .join("&");
       this.guildsToFetch.length = 0;
-      this.props.fetchSome("guilds", query);
+      this.props.fetchSome("guild", query);
     }
   };
 
   processUserCharacters = () => {
     Object.values(this.props.userCharacters).map(uc => {
-      if (!(uc.character_id in this.props.characters)) {
-        if (!this.charactersToFetch.includes(uc.character_id)) {
-          if (!this.charactersFetched.includes(uc.character_id)) {
-            this.charactersToFetch.push(uc.character_id);
+      if (!(uc.character in this.props.characters)) {
+        if (!this.charactersToFetch.includes(uc.character)) {
+          if (!this.charactersFetched.includes(uc.character)) {
+            this.charactersToFetch.push(uc.character);
           }
         }
       }
@@ -96,7 +96,7 @@ class DataSynthesizer extends React.Component {
           if (!includesCharacter(this.charactersDataFetched, c)) {
             this.charactersToFetchData.push(c);
           } else {
-            const name = c.name.first_lower || c.name.toLowerCase();
+            const name = c.name.first_lower;
             if (name in this.props.characterData) {
               if (!includesCharacter(this.charactersToUpdate, c)) {
                 if (!includesCharacter(this.charactersUpdated, c)) {
@@ -149,9 +149,7 @@ class DataSynthesizer extends React.Component {
   fetchCharacterData = () => {
     if (this.charactersToFetchData.length > 0) {
       const characterToFetchData = this.charactersToFetchData.shift();
-      const name =
-        characterToFetchData.name.first_lower ||
-        characterToFetchData.name.toLowerCase();
+      const name = characterToFetchData.name.first_lower;
       this.charactersDataFetched.push(characterToFetchData);
       this.props.fetchEQ2CharacterData(name, "Kaladim");
     }
@@ -160,13 +158,12 @@ class DataSynthesizer extends React.Component {
   updateCharacters = () => {
     if (this.charactersToUpdate.length > 0) {
       const characterToUpdate = this.charactersToUpdate.shift();
-      const name =
-        characterToUpdate.name.first_lower ||
-        characterToUpdate.name.toLowerCase();
+      const name = characterToUpdate.name.first_lower;
       const characterData = this.props.characterData[name];
       this.charactersUpdated.push(characterToUpdate);
-      this.props.edit("character", characterToUpdate.id, {
+      this.props.edit("character", characterToUpdate.name.first_lower, {
         ...characterData,
+        description: characterToUpdate.description,
         updated_at: new Date().toISOString()
       });
     }
@@ -188,7 +185,8 @@ class DataSynthesizer extends React.Component {
         name: g.name
       };
       this.guildsCreated.push(g);
-      this.props.create("guild", values);
+      this.guildsToFetch.push(g);
+      this.props.create("guild", g.guildid, values);
     }
   };
 
@@ -197,9 +195,18 @@ class DataSynthesizer extends React.Component {
       const guildToUpdate = this.guildsToUpdate.shift();
       if (guildToUpdate.guildid in this.props.guildData) {
         const storedGuildData = this.props.guildData[guildToUpdate.guildid];
+        const member_list = storedGuildData.member_list.map(m => {
+          if (m.name.first) {
+            return m;
+          } else {
+            return { ...m, name: { first: m.name } };
+          }
+        });
+
         this.guildsUpdated.push(guildToUpdate);
-        this.props.edit("guild", this.props.guilds[guildToUpdate.guildid].id, {
+        this.props.edit("guild", guildToUpdate.guildid, {
           ...storedGuildData,
+          member_list: member_list,
           updated_at: new Date().toISOString()
         });
       }

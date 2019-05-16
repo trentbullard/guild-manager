@@ -67,7 +67,7 @@ class GuildShow extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    guild: _.mapKeys(Object.values(state.guilds), "id")[
+    guild: _.mapKeys(Object.values(state.guilds), "name")[
       ownProps.match.params.id
     ]
   };

@@ -24,6 +24,7 @@ class OauthReceiver extends React.Component {
     super(props);
     this.codeErrors = null;
     this.doFetchAuthUser = true;
+    this.doFetchWithDiscordData = true;
   }
 
   getQueryParams() {
@@ -41,60 +42,59 @@ class OauthReceiver extends React.Component {
       discord_access_token: tokenData.access_token,
       discord_refresh_token: tokenData.refresh_token
     };
-    this.props.create("user", newUser);
+    this.props.create("user", profileData.id, newUser, true);
   }
 
-  checkState() {
+  sessionExists = () => {
     if (this.props.session && this.props.session.userId) {
-      return;
+      return true;
     }
+    return false;
+  };
 
-    if (this.props.currentUser) {
-      const { cookies } = this.props;
-      cookies.set(
-        "eq2-data-session",
-        { userId: this.props.currentUser.id },
-        {
-          path: "/",
-          expires: new Date(new Date().setMonth(new Date().getMonth() + 1))
-        }
-      );
-      return;
-    }
+  setSession = () => {
+    const { cookies } = this.props;
+    cookies.set(
+      "eq2-data-session",
+      { userId: this.props.currentUser.id },
+      {
+        path: "/",
+        expires: new Date(new Date().setMonth(new Date().getMonth() + 1))
+      }
+    );
+  };
 
-    if (this.props.discordUserMatch && this.doFetchAuthUser) {
-      this.doFetchAuthUser = false;
-      this.props.fetchAuthUser(this.props.discordUserMatch.id);
-      return;
-    }
-
-    if (this.props.discordProfileData) {
-      if (this.props.doFetchWithDiscordData && !this.props.discordUserMatch) {
+  checkState() {
+    if (this.sessionExists()) {
+    } else if (this.props.currentUser) {
+      this.setSession();
+    } else if (this.props.discordUserMatch && this.props.discordUserMatch.id) {
+      if (this.doFetchAuthUser) {
+        this.doFetchAuthUser = false;
+        this.props.fetchAuthUser(this.props.discordUserMatch.id);
+      }
+    } else if (this.props.discordProfileData) {
+      if (this.doFetchWithDiscordData) {
+        this.doFetchWithDiscordData = false;
+        this.props.handleDiscordData(this.props.discordProfileData.id);
+      } else {
         this.createNewUserFromDiscordData(
           this.props.discordProfileData,
           this.props.tokenResponse
         );
-        return;
       }
-      this.props.handleDiscordData(this.props.discordProfileData.id);
-      return;
-    }
-
-    if (this.props.tokenResponse) {
+    } else if (this.props.tokenResponse) {
       if (this.props.tokenResponse.access_token) {
         this.props.handleAccessToken(this.props.tokenResponse.access_token);
-        return;
       } else {
         this.codeErrors = this.props.tokenResponse;
         this.props.signOut();
-        return;
       }
-    }
-
-    const code = this.getQueryParams().code;
-    if (code) {
-      this.props.handleAuthCode(code);
-      return;
+    } else {
+      const code = this.getQueryParams().code;
+      if (code) {
+        this.props.handleAuthCode(code);
+      }
     }
   }
 

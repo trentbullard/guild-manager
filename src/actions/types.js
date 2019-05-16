@@ -18,6 +18,8 @@ export const destroy = oType => {
   return `DELETE_${oType.toUpperCase()}`;
 };
 
+export const FETCH_CHARACTER_NAMES = "FETCH_CHARACTER_NAMES";
+
 export const HANDLE_AUTH_CODE = "HANDLE_AUTH_CODE";
 export const HANDLE_ACCESS_TOKEN = "HANDLE_ACCESS_TOKEN";
 export const HANDLE_DISCORD_DATA = "HANDLE_DISCORD_DATA";
@@ -32,3 +34,4 @@ export const FETCH_EQ2_GUILD_DATA = "FETCH_EQ2_GUILD_DATA";
 export const FETCH_EQ2_ITEM_DATA = "FETCH_EQ2_ITEM_DATA";
 
 export const HEARTBEAT = "HEARTBEAT";
+export const FLASHMESSAGE = "FLASHMESSAGE";

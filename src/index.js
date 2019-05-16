@@ -6,14 +6,9 @@ import thunk from "redux-thunk";
 import { CookiesProvider } from "react-cookie";
 import App from "./components/App";
 import reducers from "./reducers";
-import actionLogger from "./middleware/actionLogger";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(
-  reducers,
-  // composeEnhancers(applyMiddleware(thunk))
-  composeEnhancers(applyMiddleware(thunk, actionLogger))
-);
+const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 
 ReactDOM.render(
   <Provider store={store}>

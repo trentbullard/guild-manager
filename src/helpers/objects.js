@@ -1,5 +1,4 @@
 import _ from "lodash";
-var util = require("util");
 
 export const getGuildIds = guilds => {
   return Object.keys(_.mapKeys(guilds, "guildid"));
@@ -12,13 +11,11 @@ export const includesGuild = (guilds, guild) => {
 export const getCharacterNames = characters => {
   return Object.keys(
     _.mapKeys(characters, c => {
-      return c.name.first_lower || c.name.toLowerCase();
+      return c.name.first_lower;
     })
   );
 };
 
 export const includesCharacter = (characters, character) => {
-  return getCharacterNames(characters).includes(
-    character.name.first_lower || character.name.toLowerCase()
-  );
+  return getCharacterNames(characters).includes(character.name.first_lower);
 };

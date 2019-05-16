@@ -1,65 +1,66 @@
-import _ from "lodash";
 import React from "react";
-import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { create, fetchSome, heartbeat } from "../../actions";
+import { create, fetchSome, fetchNames, heartbeat } from "../../actions";
 import CharacterForm from "./CharacterForm";
 import DiscordAuth from "../auth/DiscordAuth";
-import { includesCharacter } from "../../helpers/objects";
 
 class CharacterCreate extends React.Component {
   constructor(props) {
     super(props);
     this.formValues = null;
-    this.characterName = null;
-    this.server = null;
+    this.doFetchNames = true;
     this.doCreateCharacter = true;
     this.doCreateUserCharacter = true;
   }
 
   componentDidUpdate() {
-    if (this.characterName) {
-      const newCharacter = { name: this.characterName.toLowerCase() };
-      if (
-        !includesCharacter(this.props.characters, newCharacter) &&
-        this.doCreateCharacter
-      ) {
+    if (this.doFetchNames) {
+      this.doFetchNames = false;
+      this.props.fetchNames();
+    }
+    if (this.props.currentUser && this.doFetchUserCharacters) {
+      this.doFetchUserCharacters = false;
+      this.props.fetchSome(
+        "user_characters",
+        `user:${this.props.currentUser.id}`
+      );
+    }
+    if (this.formValues) {
+      const characterName = this.formValues.name.toLowerCase();
+      if (!this.props.names.includes(characterName) && this.doCreateCharacter) {
         this.doCreateCharacter = false;
-        this.props.create("character", this.formValues);
+        this.doFetchNames = true;
+        this.props.create("character", characterName, {
+          name: { first_lower: characterName, first: this.formValues.name },
+          description: this.formValues.description,
+          locationdata: { world: this.formValues.locationdata }
+        });
+      } else if (
+        !(characterName in this.props.userCharacters) &&
+        this.doCreateUserCharacter
+      ) {
+        this.doCreateUserCharacter = false;
+        this.props.create(
+          "user_character",
+          `${this.props.currentUser.id}_${characterName}`,
+          {
+            user: this.props.currentUser.id,
+            character: characterName
+          },
+          true
+        );
       } else {
-        const character = _.mapKeys(this.props.characters, c => {
-          return c.name.first_lower || c.name.toLowerCase();
-        })[this.characterName.toLowerCase()];
-        if (character && this.doCreateUserCharacter) {
-          if (!(character.id in this.props.userCharacters)) {
-            this.doCreateUserCharacter = false;
-            this.props.create(
-              "user_character",
-              {
-                user_id: this.props.currentUser.id,
-                character_id: character.id
-              },
-              true
-            );
-          } else {
-            this.props.heartbeat(true);
-          }
-        }
+        this.props.heartbeat(true);
       }
     }
   }
 
   onSubmit = formValues => {
     this.formValues = formValues;
-    this.characterName = formValues.name.toLowerCase();
-    this.server = formValues.server;
-    this.props.fetchSome("characters", `q=${formValues.name}`);
   };
 
-  render(redirect = false) {
-    if (redirect) {
-      return <Redirect to="/" />;
-    } else if (this.props.currentUser) {
+  render() {
+    if (this.props.currentUser) {
       return (
         <div>
           <h3>Add a Character</h3>
@@ -80,11 +81,12 @@ const mapStateToProps = state => {
   return {
     currentUser: state.currentUser,
     userCharacters: state.userCharacters,
-    characters: Object.values(state.characters)
+    characters: state.characters,
+    names: state.characterNames
   };
 };
 
 export default connect(
   mapStateToProps,
-  { create, fetchSome, heartbeat }
+  { create, fetchSome, fetchNames, heartbeat }
 )(CharacterCreate);

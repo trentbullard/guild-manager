@@ -2,6 +2,8 @@ import React from "react";
 import { Router, Route, Switch } from "react-router-dom";
 import { instanceOf } from "prop-types";
 import { Cookies, withCookies } from "react-cookie";
+import { connect } from "react-redux";
+import Alert from "./Alert";
 import Header from "./Header";
 import Dashboard from "./Dashboard";
 import CharacterShow from "./characters/CharacterShow";
@@ -11,9 +13,9 @@ import EventShow from "./events/EventShow";
 import ItemShow from "./items/ItemShow";
 import OauthReceiver from "./auth/OauthReceiver";
 import DataSynthesizer from "./DataSynthesizer";
+import CharacterDelete from "./characters/CharacterDelete";
 import Logout from "./auth/Logout";
 import history from "../history";
-import { connect } from "react-redux";
 import { fetchAuthUser } from "../actions";
 
 class App extends React.Component {
@@ -37,9 +39,15 @@ class App extends React.Component {
           <div>
             <DataSynthesizer />
             <Header />
+            <Alert />
             <Switch>
               <Route path="/" exact component={Dashboard} />
               <Route path="/characters/new" exact component={CharacterCreate} />
+              <Route
+                path="/characters/delete/:id"
+                exact
+                component={CharacterDelete}
+              />
               <Route path="/characters/:id" exact component={CharacterShow} />
               <Route path="/guilds/:id" exact component={GuildShow} />
               <Route path="/events/:id" exact component={EventShow} />

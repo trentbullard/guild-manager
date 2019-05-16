@@ -9,6 +9,14 @@ export default (state = {}, action) => {
         [action.payload.guildid]: action.payload
       };
     case types.create("guild"):
+      if (action.payload.result == "created") {
+        return {
+          ...state,
+          [action.payload.object.guildid]: action.payload.object
+        };
+      } else {
+        return state;
+      }
     case types.edit("guild"):
       return {
         ...state,
@@ -16,6 +24,8 @@ export default (state = {}, action) => {
       };
     case types.destroy("guild"):
       return _.omit(state, action.payload);
+    case types.destroy("user_character"):
+      return {};
     case types.fetchSome("guilds"):
     case types.fetch("guilds"):
       return {

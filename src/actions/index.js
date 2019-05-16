@@ -1,31 +1,93 @@
 import history from "../history";
-import data from "../apis/data";
 import discordAuth from "../apis/discord";
 import eq2Data from "../apis/eq2";
+import es from "../apis/es";
 import * as types from "./types";
 
-export const fetchOne = (oType, id) => async dispatch => {
-  const response = await data.get(`/${oType}s/${id}`);
-  dispatch({ type: types.fetch(oType), payload: response.data });
+export const fetchOne = (oType, query) => async dispatch => {
+  try {
+    const response = await es.get(`/${oType}/_doc/_search?q=${query}`);
+    dispatch({
+      type: types.fetch(oType),
+      payload: response.data.hits.hits
+    });
+  } catch (err) {
+    dispatch({
+      type: types.FLASHMESSAGE,
+      payload: err.response.status
+    });
+  }
 };
 
-export const fetchSome = (oType, terms) => async dispatch => {
-  const response = await data.get(`/${oType}?${terms}`);
-  dispatch({ type: types.fetchSome(`${oType}`), payload: response.data });
+export const fetchSome = (
+  oType,
+  terms,
+  ignoreErrors = false
+) => async dispatch => {
+  try {
+    const response = await es.get(`/${oType}/_doc/_search?q=${terms}`);
+    dispatch({
+      type: types.fetchSome(`${oType}s`),
+      payload: response.data.hits.hits.map(o => {
+        return o._source;
+      })
+    });
+  } catch (err) {
+    dispatch({
+      type: types.FLASHMESSAGE,
+      payload: err.response.status
+    });
+  }
+};
+
+export const fetchNames = () => async dispatch => {
+  try {
+    const response = await es.get(`/character/_search`);
+    dispatch({
+      type: types.FETCH_CHARACTER_NAMES,
+      payload: response.data.hits.hits.map(o => {
+        return o._source.name.first_lower;
+      })
+    });
+  } catch (err) {
+    dispatch({
+      type: types.FLASHMESSAGE,
+      payload: err.response.status
+    });
+  }
 };
 
 export const fetchAll = oType => async dispatch => {
-  const response = await data.get(`/${oType}s`);
-  dispatch({ type: types.fetch(`${oType}s`), payload: response.data });
+  try {
+    const response = await es.get(`/${oType}/_doc/_search`);
+    dispatch({
+      type: types.fetch(`${oType}s`),
+      payload: response.data.hits.hits.map(o => {
+        return o._source;
+      })
+    });
+  } catch (err) {
+    dispatch({
+      type: types.FLASHMESSAGE,
+      payload: err.response.status
+    });
+  }
 };
 
 export const create = (
   oType,
+  id,
   formValues,
   doRedirect = false
 ) => async dispatch => {
-  const response = await data.post(`/${oType}s`, formValues);
-  dispatch({ type: types.create(oType), payload: response.data });
+  const response = await es.post(`/${oType}/_doc/${id}`, formValues);
+  dispatch({
+    type: types.create(oType),
+    payload: {
+      result: response.data.result,
+      object: formValues
+    }
+  });
   if (doRedirect) {
     history.push("/");
   }
@@ -37,23 +99,44 @@ export const edit = (
   formValues,
   doRedirect = false
 ) => async dispatch => {
-  const response = await data.patch(`/${oType}s/${id}`, formValues);
-  dispatch({ type: types.edit(oType), payload: response.data });
+  await es.put(`/${oType}/_doc/${id}`, formValues);
+  dispatch({
+    type: types.edit(oType),
+    payload: { ...formValues, id: id }
+  });
   if (doRedirect) {
     history.push("/");
   }
 };
 
-export const destroy = (oType, id) => async dispatch => {
-  const response = await data.delete(`/${oType}s/${id}`);
-  dispatch({ type: types.destroy(oType), payload: response.data });
+export const destroy = (
+  oType,
+  id,
+  oToDestroy,
+  doRedirect = false
+) => async dispatch => {
+  const response = await es.delete(`/${oType}/_doc/${id}`);
+  dispatch({
+    type: types.destroy(oType),
+    payload: { found: response.data.found, deleted: oToDestroy }
+  });
+  if (doRedirect) {
+    history.push("/");
+  }
 };
 
-export const heartbeat = (doRedirect=false) => async dispatch => {
+export const heartbeat = (doRedirect = false) => async dispatch => {
   dispatch({ type: types.HEARTBEAT });
-  if (doRedirect){
-    history.push("/")
+  if (doRedirect) {
+    history.push("/");
   }
+};
+
+export const alert = messages => async dispatch => {
+  dispatch({
+    type: types.FLASHMESSAGE,
+    payload: [messages].flat()
+  });
 };
 
 ////////////////////////////
@@ -61,8 +144,11 @@ export const heartbeat = (doRedirect=false) => async dispatch => {
 ////////////////////////////
 
 export const handleDiscordData = discordId => async dispatch => {
-  const response = await data.get(`/users?discord_id=${discordId}`);
-  dispatch({ type: types.HANDLE_DISCORD_DATA, payload: response.data });
+  const response = await es.get(`/user/_search?q=discord_id:${discordId}`);
+  dispatch({
+    type: types.HANDLE_DISCORD_DATA,
+    payload: response.data.hits.hits
+  });
 };
 
 export const handleAccessToken = token => async dispatch => {
@@ -107,8 +193,11 @@ export const signIn = userId => {
 };
 
 export const fetchAuthUser = userId => async dispatch => {
-  const response = await data.get(`/users/${userId}`);
-  dispatch({ type: types.FETCH_AUTH_USER, payload: response.data });
+  const response = await es.get(`/user/_doc/_search?q=id:${userId}`);
+  dispatch({
+    type: types.FETCH_AUTH_USER,
+    payload: response.data.hits.hits
+  });
 };
 
 export const signOut = () => {
@@ -123,7 +212,7 @@ export const signOut = () => {
 
 export const fetchEQ2CharacterData = (name, world) => async dispatch => {
   const response = await eq2Data.get(
-    `/character/?c:show=equipmentslot_list,spell_list,equipped_mount,mount_list,collections,stats,dbid,resists,type,tradeskills,statistics,locationdata,name,guild,house_list,skills,experience,faction_list,language_list&name.first_lower=${name.toLowerCase()}&locationdata.world=${world}&c:resolve=factions,equipmentslots`
+    `/character/?c:show=equipmentslot_list,spell_list,equipped_mount,mount_list,collections,stats,dbid,resists,type,tradeskills,statistics,locationdata,name,guild,house_list,skills,experience,faction_list,language_list&name.first_lower=${name}&locationdata.world=${world}&c:resolve=factions,equipmentslots`
   );
   dispatch({ type: types.FETCH_EQ2_CHARACTER_DATA, payload: response.data });
 };

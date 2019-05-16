@@ -19,7 +19,7 @@
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
-    "start": "concurrently \"react-scripts start\" \"cd api && npm start\""
+    "start": "concurrently \"react-scripts start\" \"elasticsearch\""
   },
   "eslintConfig": {
     "extends": "react-app"

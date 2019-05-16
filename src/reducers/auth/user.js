@@ -1,12 +1,15 @@
-import _ from "lodash";
 import * as types from "../../actions/types";
 
 export default (state = null, action) => {
   switch (action.type) {
     case types.FETCH_AUTH_USER:
-      return { ...state, ...action.payload };
+      if (action.payload[0]) {
+        return action.payload[0]._source;
+      } else {
+        return state;
+      }
     case types.SIGN_OUT:
-      return _.omit(state, action.payload);
+      return null;
     default:
       return state;
   }

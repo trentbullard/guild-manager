@@ -8,13 +8,13 @@ const renderAdmin = (currentUser, character) => {
     return (
       <div className="right floated content">
         <Link
-          to={`/characters/edit/${character.id}`}
+          to={`/characters/edit/${character.name.first_lower}`}
           className="button ui primary"
         >
           Edit
         </Link>
         <Link
-          to={`/characters/delete/${character.id}`}
+          to={`/characters/delete/${character.name.first_lower}`}
           className="button ui negative"
         >
           Delete
@@ -30,12 +30,15 @@ const renderList = (currentUser, characters) => {
   }
   return Object.values(characters).map(character => {
     return (
-      <div className="item" key={character.id}>
+      <div className="item" key={character.name.first_lower}>
         {renderAdmin(currentUser, character)}
         <i className="large middle aligned icon address card outline" />
         <div className="content">
-          <Link to={`/characters/${character.id}`} className="header">
-            {character.name.first || character.name}
+          <Link
+            to={`/characters/${character.name.first_lower}`}
+            className="header"
+          >
+            {character.name.first}
           </Link>
           <div className="description">{character.description}</div>
         </div>
