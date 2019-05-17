@@ -144,11 +144,18 @@ export const alert = messages => async dispatch => {
 ////////////////////////////
 
 export const handleDiscordData = discordId => async dispatch => {
-  const response = await es.get(`/user/_search?q=discord_id:${discordId}`);
-  dispatch({
-    type: types.HANDLE_DISCORD_DATA,
-    payload: response.data.hits.hits
-  });
+  try {
+    const response = await es.get(`/user/_search?q=discord_id:${discordId}`);
+    dispatch({
+      type: types.HANDLE_DISCORD_DATA,
+      payload: response.data.hits.hits
+    });
+  } catch (e) {
+    dispatch({
+      type: types.HANDLE_DISCORD_DATA,
+      payload: []
+    });
+  }
 };
 
 export const handleAccessToken = token => async dispatch => {
