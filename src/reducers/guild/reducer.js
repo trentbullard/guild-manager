@@ -32,6 +32,8 @@ export default (state = {}, action) => {
         ...state,
         ..._.mapKeys(action.payload, "guildid")
       };
+    case types.SIGN_OUT:
+      return {};
     default:
       return state;
   }

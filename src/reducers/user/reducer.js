@@ -34,6 +34,8 @@ export default (state = null, action) => {
         ...state,
         ..._.mapKeys(action.payload, "id")
       };
+    case types.SIGN_OUT:
+      return {};
     default:
       return state;
   }
