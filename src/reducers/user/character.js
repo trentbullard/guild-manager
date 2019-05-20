@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import _ from "lodash";
 import * as types from "../../actions/types";
 
@@ -25,11 +26,12 @@ export default (state = {}, action) => {
     case types.destroy("user_character"):
       return _.omit(state, action.payload.deleted.character);
     case types.fetchSome("user_characters"):
-    case types.fetch("user_characters"):
       return {
         ...state,
         ..._.mapKeys(action.payload, "character")
       };
+    case types.SIGN_OUT:
+      return {};
     default:
       return state;
   }

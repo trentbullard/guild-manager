@@ -25,7 +25,7 @@ export const fetchSome = (
   ignoreErrors = false
 ) => async dispatch => {
   try {
-    const response = await es.get(`/${oType}/_doc/_search?q=${terms}`);
+    const response = await es.get(`/${oType}/_doc/_search`, terms);
     dispatch({
       type: types.fetchSome(`${oType}s`),
       payload: response.data.hits.hits.map(o => {
@@ -35,14 +35,14 @@ export const fetchSome = (
   } catch (err) {
     dispatch({
       type: types.FLASHMESSAGE,
-      payload: err.response.status
+      payload: err.response
     });
   }
 };
 
 export const fetchNames = () => async dispatch => {
   try {
-    const response = await es.get(`/character/_search`);
+    const response = await es.get(`/character/_doc/_search`);
     dispatch({
       type: types.FETCH_CHARACTER_NAMES,
       payload: response.data.hits.hits.map(o => {

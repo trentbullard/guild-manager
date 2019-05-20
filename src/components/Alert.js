@@ -7,7 +7,7 @@ class Alert extends React.Component {
     return (
       <ul className="list">
         {alerts.map(a => {
-          return <li key="a">{a}</li>;
+          return <li key="a">{a.statusText}</li>;
         })}
       </ul>
     );

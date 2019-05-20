@@ -8,6 +8,8 @@ export default (state = {}, action) => {
         ...state,
         ..._.mapKeys(action.payload.guild_list, "guildid")
       };
+    case types.SIGN_OUT:
+      return {};
     default:
       return state;
   }

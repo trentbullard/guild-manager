@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import _ from "lodash";
 import * as types from "../../actions/types";
 

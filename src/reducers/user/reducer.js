@@ -1,3 +1,4 @@
+/* eslint-disable eqeqeq */
 import _ from "lodash";
 import * as types from "../../actions/types";
 
@@ -35,7 +36,7 @@ export default (state = null, action) => {
         ..._.mapKeys(action.payload, "id")
       };
     case types.SIGN_OUT:
-      return {};
+      return null;
     default:
       return state;
   }

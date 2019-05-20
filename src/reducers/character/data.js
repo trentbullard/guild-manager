@@ -8,6 +8,8 @@ export default (state = {}, action) => {
         ...state,
         ..._.mapKeys(action.payload.character_list, "name.first_lower")
       };
+    case types.SIGN_OUT:
+      return {};
     default:
       return state;
   }

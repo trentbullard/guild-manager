@@ -1,4 +1,5 @@
 /* eslint-disable array-callback-return */
+import _ from "lodash";
 import React from "react";
 import { connect } from "react-redux";
 import {
@@ -41,24 +42,42 @@ class DataSynthesizer extends React.Component {
   fetchUserCharacters = () => {
     if (this.doFetchUserCharacters && this.props.currentUser) {
       this.doFetchUserCharacters = false;
-      this.props.fetchSome(
-        "user_character",
-        `user:${this.props.currentUser.id}`,
-        true
-      );
+      const query = {
+        params: {
+          source: JSON.stringify({
+            query: {
+              match: {
+                user: this.props.currentUser.id
+              }
+            }
+          }),
+          source_content_type: "application/json"
+        }
+      };
+      this.props.fetchSome("user_character", query, true);
     }
   };
 
   fetchCharacters = () => {
     if (this.charactersToFetch.length > 0) {
-      const query = this.charactersToFetch
-        .map(name => {
-          if (!this.charactersFetched.includes(name)) {
-            this.charactersFetched.push(name);
-            return `name.first_lower:${name}`;
-          }
-        })
-        .join("&");
+      const query = {
+        params: {
+          source: JSON.stringify({
+            query: {
+              bool: {
+                must: [
+                  {
+                    terms: {
+                      "name.first_lower": _.uniq(this.charactersToFetch)
+                    }
+                  }
+                ]
+              }
+            }
+          }),
+          source_content_type: "application/json"
+        }
+      };
       this.charactersToFetch.length = 0;
       this.props.fetchSome("character", query);
     }
@@ -66,12 +85,26 @@ class DataSynthesizer extends React.Component {
 
   fetchGuilds = () => {
     if (this.guildsToFetch.length > 0) {
-      const query = this.guildsToFetch
-        .map(g => {
-          this.guildsFetched.push(g);
-          return `guildid:${g.guildid}`;
-        })
-        .join("&");
+      const query = {
+        params: {
+          source: JSON.stringify({
+            query: {
+              bool: {
+                must: [
+                  {
+                    terms: {
+                      guildid: this.guildsToFetch.map(g => {
+                        return g.guildid;
+                      })
+                    }
+                  }
+                ]
+              }
+            }
+          }),
+          source_content_type: "application/json"
+        }
+      };
       this.guildsToFetch.length = 0;
       this.props.fetchSome("guild", query);
     }

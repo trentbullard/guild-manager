@@ -15,8 +15,9 @@ class CharacterDelete extends React.Component {
     if (this.props.currentUser && this.doFetchUserCharacters) {
       this.doFetchUserCharacters = false;
       this.props.fetchSome(
-        "user_characters",
-        `user:${this.props.currentUser.id}`
+        "user_character",
+        `user:${this.props.currentUser.id}`,
+        true
       );
     }
   };

@@ -11,6 +11,8 @@ export default (state = {}, action) => {
       return _.omit(state, action.payload);
     case types.fetch("events"):
       return { ...state, ..._.mapKeys(action.payload, "id") };
+    case types.SIGN_OUT:
+      return {};
     default:
       return state;
   }
